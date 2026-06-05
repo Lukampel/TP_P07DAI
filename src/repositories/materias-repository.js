@@ -36,7 +36,7 @@ export default class MateriasRepository {
         console.log(`MateriasRepository.getByIdAsync(${id})`);
         let returnEntity = null;
         try {
-            const sql = `SELECT * FROM materiasursos WHERE id=$1`;
+            const sql = `SELECT * FROM materias WHERE id=$1`;
             const values = [id];
             const resultPg = await this.getDBPool().query(sql, values);
             if (resultPg.rows.length > 0){

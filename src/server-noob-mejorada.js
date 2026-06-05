@@ -5,6 +5,7 @@ import cors 	from "cors";	// hacer npm i cors
 import AlumnosRouter    from "./router/alumnos-router-noob.js"
 import CursosRouter     from "./router/cursos-router-noob.js"
 import MateriasRouter     from "./router/materias-router-noob.js"
+import CalificacionesRouter from "./router/calificaciones-router-noob.js"
 
 const app  = express();
 const port = 3000;
@@ -17,6 +18,7 @@ app.use(express.json()); // Middleware para parsear y comprender JSON
 app.use("/api/alumnos", AlumnosRouter);
 app.use("/api/cursos" , CursosRouter);
 app.use("/api/materias" , MateriasRouter);
+app.use("/api/calificaciones" , CalificacionesRouter);
 
 //
 // Inicio el Server y lo pongo a escuchar.

@@ -38,4 +38,78 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.post('', async (req, res) => {
+    let entity = req.body;
+
+    try{
+        const sql = ` INSERT INTO materias (
+                            nombre
+                        ) VALUES (
+                            $1
+                        ) RETURNING id`;
+        const values =  [   entity?.nombre ?? '' 
+                        ];
+        const resultPg = await pool.query(sql, values);
+        const newId = resultPg.rows[0].id;
+        if (newId > 0 ){
+            res.status(StatusCodes.CREATED).json(newId);
+        } else {
+            res.status(StatusCodes.BAD_REQUEST).json(null);
+        }
+    } catch (error){
+        console.log(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(`Error: ` + error.message);
+    }
+});
+
+
+router.put('/:id', async (req, res) => {
+    let id = parseInt(req.params.id);
+    let entity = req.body;
+
+    if (entity.id && parseInt(entity.id) !== id) {
+        return res.status(StatusCodes.BAD_REQUEST).send(`El id de la URL (${id}) no coincide con el id del body (${entity.id}).`);
+    }
+
+    try {
+        const sql = `UPDATE materias SET
+                            nombre              = $2
+                        WHERE id = $1`;
+
+        const values =  [   id,
+                            entity?.nombre ?? ''
+                        ];
+       
+        const resultPg = await pool.query(sql, values);
+        const rowsAffected = resultPg.rowCount;
+        if (rowsAffected > 0){
+            res.status(StatusCodes.OK).json(rowsAffected);
+        } else {
+            res.status(StatusCodes.NOT_FOUND).json(null);
+        }
+    } catch (error){
+        console.log(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(`Error: ` + error.message);
+    }
+});
+
+
+router.delete('/:id', async (req, res) => {
+    let id = req.params.id;
+
+    try{
+        const sql = `DELETE FROM materias WHERE id=$1`;
+        const values = [id];
+        const resultPg = await pool.query(sql, values);
+        if (resultPg.rowCount > 0 ){
+            res.status(StatusCodes.OK).json(null);
+        } else {
+            res.status(StatusCodes.NOT_FOUND).json(null);
+        }
+    } catch (error){
+        console.log(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(`Error: ` + error.message);
+    }
+});
+
 export default router;
